@@ -21,7 +21,7 @@ class PathMNISTDataset(Dataset):
         np_image = np.array(image)
 
         if self.transform:
-            np_image = self.transform(image='np_image')['image']
+            np_image = self.transform(image = np_image)['image']
 
         label_int = int(label[0]) if hasattr(label, '__len__') else int(label)
         return np_image, label_int
@@ -66,7 +66,7 @@ class ISICDataset(Dataset):
         np_image = np.array(image)
 
         if self.transform:
-            np_image = self.transform(image='np_image')['image']
+            np_image = self.transform(image=np_image)['image']
 
         return np_image, label
 

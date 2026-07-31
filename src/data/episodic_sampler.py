@@ -28,9 +28,9 @@ def sample_episode(dataset, class_index, base_classes, n_way, k_shot, q_query, d
     query = torch.cat(query_images).to(device)
     labels = torch.tensor(query_labels, dtype = torch.long).to(device)
 
-    if labels.min() <= 0:
+    if labels.min() < 0:
         raise Exception("negative labels found!")
-    if labels.max() > n_way:
+    if labels.max() >= n_way:
         raise Exception("out of range labels")
     if labels.shape != (n_way * q_query, ):
         raise Exception("incorrect labels shape. please recheck")

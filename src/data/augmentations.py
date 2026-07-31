@@ -13,13 +13,13 @@ def get_test_transform():
 
 def get_path_train_transform():
     return A.Compose([
-        A.RandomResizedCrop(height = 224, width = 224, scale = (0.7, 1.0)),
+        A.RandomResizedCrop(size = (224, 224), scale = (0.7, 1.0)),
         A.HorizontalFlip(p = 0.5),
         A.VerticalFlip(p = 0.5),
         A.RandomRotate90(p = 0.5),
         A.HueSaturationValue(hue_shift_limit = 10, sat_shift_limit = 20, val_shift_limit = 15),
         A.ElasticTransform(alpha = 90, sigma = 6, p = 0.2),
-        A.GaussNoise(var_limit = (5.0, 25.0), p = 0.2),
+        A.GaussNoise(std_range=(0.2, 0.4), p = 0.2),
         A.Normalize(mean = IMAGENET_MEAN, std = IMAGENET_STD),
         ToTensorV2()
     ])

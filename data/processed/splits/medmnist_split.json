@@ -1,0 +1,4 @@
+{
+    "base_classes": [1, 2, 3, 5, 7, 8],
+    "novel_classes": [0, 4, 6]
+}

@@ -1,4 +1,5 @@
 .venv
+.env
 data/isic/
 data/medmnist/
 data/processed/support images

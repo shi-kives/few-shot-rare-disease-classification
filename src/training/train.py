@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from src.data.datasets import PathMNISTDataset, build_class_index
 from src.data.augmentations import get_transform
-from src.data.episodic_sampler import sample_episode, EpisodeLoader
+from src.data.episodic_sampler import EpisodeLoader
 from src.models.embedding_generator import EmbeddingGenerator
 from src.models.proto_net import prototypical_loss
 from src.training.evaluate import evaluate
@@ -101,23 +101,34 @@ def train():
                 torch.save(model.state_dict(), CONFIG['model_save_path'])
                 print(f"saved best model with val accuracy: {val_accuracy:.4f}")
 
-        test_dataset = PathMNISTDataset('test', get_transform('path', 'test'))
-        test_class_idx = build_class_index(test_dataset)
 
+def evaluate_test():
+    print("test evaluation started")
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("testing on device: ", device)
+
+    model = EmbeddingGenerator('resnet18', 128).to(device)
+
+    with mlflow.start_run(run_name = f"{CONFIG['backbone']}_baseline_test"):
+        test_dataset = PathMNISTDataset(split = 'test', transform = get_transform('path', 'test'))
+        test_class_idx = build_class_index(dataset = test_dataset)
         model.load_state_dict(torch.load(CONFIG['model_save_path']))
 
-        test_acc_5shot, test_ci_5shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 5, 5, 15, 600, device)
+        test_acc_5shot, test_ci_5shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 3, 5, 15, 600, device)
 
-        test_acc_1shot, test_ci_1shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 5, 1, 15, 600, device)
+        test_acc_1shot, test_ci_1shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 3, 1, 15, 600, device)
 
-        print("---- final results ---\n")
-        print(f"5-way 5-shot: accuracy = {test_acc_5shot:.4f} +- {test_ci_5shot}")
-        print(f"5-way 1-shot accuracy: {test_acc_1shot} +- {test_ci_1shot}")
+        print("\n---- final results ---")
+        print(f"3-way 5-shot: accuracy = {test_acc_5shot:.4f} +- {test_ci_5shot:.4f}")
+        print(f"3-way 1-shot: accuracy = {test_acc_1shot:.4f} +- {test_ci_1shot:.4f}")
 
-        mlflow.log_metric('test_acc_5way_5shot', test_acc_5shot)
-        mlflow.log_metric('test_ci_5way_5shot', test_ci_5shot)
-        mlflow.log_metric('test_acc_5way_1shot', test_acc_1shot)
-        mlflow.log_metric('test_ci_5way_1shot', test_ci_1shot)
+        mlflow.log_metric('test_acc_3way_5shot', test_acc_5shot)
+        mlflow.log_metric('test_ci_3way_5shot', test_ci_5shot)
+        mlflow.log_metric('test_acc_3way_1shot', test_acc_1shot)
+        mlflow.log_metric('test_ci_3way_1shot', test_ci_1shot)
+
 
 if __name__ == '__main__':
     train()
+    evaluate_test()

@@ -16,7 +16,7 @@ with open('data/processed/splits/medmnist_split.json', 'r', encoding = 'utf-8') 
     print("data loaded: ", data)
 
 CONFIG = {
-    'backbone': 'resnet18',
+    'backbone': 'efficientnet_b3',
     'embed_dim': 128,
     'n_way': 5,
     'k_shot': 5,
@@ -46,7 +46,7 @@ def train():
 
     train_loader = EpisodeLoader(train_dataset, train_class_idx, CONFIG['base_classes'], CONFIG['n_way'], CONFIG['k_shot'], CONFIG['q_query'], CONFIG['episodes_per_epoch'], device)
 
-    model = EmbeddingGenerator('resnet18', 128)
+    model = EmbeddingGenerator(CONFIG['backbone'], 128)
     model.freeze_backbone()
 
     optimizer = torch.optim.Adam(model.projection.parameters(), lr=CONFIG['lr_head'])
@@ -89,7 +89,7 @@ def train():
             val_accuracy, val_conf_int = evaluate(model, val_dataset, val_class_idx, CONFIG['base_classes'], CONFIG['n_way'], CONFIG['k_shot'], CONFIG['q_query'], CONFIG['val_episodes'], device)
 
             print(f"-- epoch {epoch + 1}/{CONFIG['n_epochs']} --")
-            print(f"training loss: {train_loss}, training accuracy: {train_accuracy}, validation accuracy: {val_accuracy} +- {val_conf_int:.4f}")
+            print(f"training loss: {train_loss:.4f}, training accuracy: {train_accuracy:.4f}, validation accuracy: {val_accuracy:.4f} +- {val_conf_int:.4f}")
 
             mlflow.log_metric('train_loss', train_loss, step = epoch)
             mlflow.log_metric('train_accuracy', train_accuracy, step = epoch)
@@ -98,7 +98,7 @@ def train():
 
             if val_accuracy > best_val_accuracy:
                 best_val_accuracy = val_accuracy
-                torch.save(model.state_dict(), CONFIG['model_save_path'])
+                torch.save(model.state_dict(), CONFIG['model_save_path'] + f'{CONFIG['backbone']}')
                 print(f"saved best model with val accuracy: {val_accuracy:.4f}")
 
 
@@ -108,12 +108,12 @@ def evaluate_test():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("testing on device: ", device)
 
-    model = EmbeddingGenerator('resnet18', 128).to(device)
+    model = EmbeddingGenerator(CONFIG['backbone'], 128).to(device)
 
     with mlflow.start_run(run_name = f"{CONFIG['backbone']}_baseline_test"):
         test_dataset = PathMNISTDataset(split = 'test', transform = get_transform('path', 'test'))
         test_class_idx = build_class_index(dataset = test_dataset)
-        model.load_state_dict(torch.load(CONFIG['model_save_path']))
+        model.load_state_dict(torch.load(CONFIG['model_save_path'] + f'{CONFIG['backbone']}'))
 
         test_acc_5shot, test_ci_5shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 3, 5, 15, 600, device)
 
@@ -130,5 +130,5 @@ def evaluate_test():
 
 
 if __name__ == '__main__':
-    train()
+    #train()
     evaluate_test()

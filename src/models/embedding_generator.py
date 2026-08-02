@@ -40,7 +40,7 @@ class EmbeddingGenerator(nn.Module):
                 else:
                     for param in block.parameters():
                         param.requires_grad = True
-                print("unfroze last block: ", attr_name[-1])
+                print("unfroze last block: ", attr_name)
                 return
         print("couldn't identify last block. unfreezing the entire backbone")
         for param in self.backbone.parameters():

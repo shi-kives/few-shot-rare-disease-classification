@@ -30,7 +30,6 @@ CONFIG = {
     'grad_clip': 1.0,
     'base_classes': data['base_classes'],
     'novel_classes': data['novel_classes'],
-    'model_save_path': 'models/best_model.pth'
 }
 
 
@@ -46,7 +45,7 @@ def train():
 
     train_loader = EpisodeLoader(train_dataset, train_class_idx, CONFIG['base_classes'], CONFIG['n_way'], CONFIG['k_shot'], CONFIG['q_query'], CONFIG['episodes_per_epoch'], device)
 
-    model = EmbeddingGenerator(CONFIG['backbone'], 128)
+    model = EmbeddingGenerator(CONFIG['backbone'], CONFIG['embed_dim']).to(device)
     model.freeze_backbone()
 
     optimizer = torch.optim.Adam(model.projection.parameters(), lr=CONFIG['lr_head'])
@@ -96,9 +95,10 @@ def train():
             mlflow.log_metric('val_accuracy', val_accuracy, step = epoch)
             mlflow.log_metric('val_confidence_interval', val_conf_int, step = epoch)
 
+            model_path = f"models/best_model_{CONFIG['backbone']}.pth"
             if val_accuracy > best_val_accuracy:
                 best_val_accuracy = val_accuracy
-                torch.save(model.state_dict(), CONFIG['model_save_path'] + f'{CONFIG['backbone']}')
+                torch.save(model.state_dict(), model_path)
                 print(f"saved best model with val accuracy: {val_accuracy:.4f}")
 
 
@@ -108,16 +108,18 @@ def evaluate_test():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("testing on device: ", device)
 
-    model = EmbeddingGenerator(CONFIG['backbone'], 128).to(device)
+    model = EmbeddingGenerator(CONFIG['backbone'], CONFIG['embed_dim']).to(device)
 
     with mlflow.start_run(run_name = f"{CONFIG['backbone']}_baseline_test"):
         test_dataset = PathMNISTDataset(split = 'test', transform = get_transform('path', 'test'))
         test_class_idx = build_class_index(dataset = test_dataset)
-        model.load_state_dict(torch.load(CONFIG['model_save_path'] + f'{CONFIG['backbone']}'))
 
-        test_acc_5shot, test_ci_5shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 3, 5, 15, 600, device)
+        model_path = f"models/best_model_{CONFIG['backbone']}.pth"
+        model.load_state_dict(torch.load(model_path, map_location=device))
 
-        test_acc_1shot, test_ci_1shot = evaluate(model, test_dataset, test_class_idx, CONFIG['novel_classes'], 3, 1, 15, 600, device)
+        test_acc_5shot, test_ci_5shot = evaluate(model = model, dataset = test_dataset, class_index = test_class_idx, available_classes = CONFIG['novel_classes'], n_way = 3, k_shot = 5, q_query = 15, n_episodes = 600, device = device)
+
+        test_acc_1shot, test_ci_1shot = evaluate(model = model, dataset = test_dataset, class_index = test_class_idx, available_classes = CONFIG['novel_classes'], n_way = 3, k_shot = 1, q_query = 15, n_episodes = 600, device = device)
 
         print("\n---- final results ---")
         print(f"3-way 5-shot: accuracy = {test_acc_5shot:.4f} +- {test_ci_5shot:.4f}")

@@ -81,3 +81,23 @@ def build_class_index(dataset):
         class_index[int(label)].append(idx)
 
     return dict(class_index)
+
+class SupConDataset(Dataset):
+    def __init__(self, base_dataset, two_view_transform):
+        self.dataset = base_dataset
+        self.transform = two_view_transform
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, idx):
+        raw_image = self.dataset.base[idx][0]
+        np_image = np.array(raw_image)
+
+        if np_image.ndim == 2:
+            np_image = np.stack([np_image] * 3, axis = -1)
+
+        view1, view2 = self.transform(np_image)
+        label = self.dataset[idx][1]
+
+        return view1, view2, label

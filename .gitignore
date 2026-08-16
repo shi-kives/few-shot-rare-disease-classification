@@ -2,4 +2,10 @@
 .env
 data/isic/
 data/medmnist/
-data/processed/support images
+chroma_store/
+tests/__pycache__/
+data/__pycache__/
+src/data/__pycache__/
+src/models/__pycache__/
+src/retrieval/__pycache__/
+src/training/__pycache__/

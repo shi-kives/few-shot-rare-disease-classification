@@ -41,7 +41,7 @@ def k_retrieval_precision(model, test_images, test_labels, support_collection, k
                 image_tensor = image_tensor.unsqueeze(0)
             image_tensor = image_tensor.to(device)
             embedding = model(image_tensor)
-            np_embedding = embedding.squeeze().cpu().np().tolist()
+            np_embedding = embedding.squeeze().cpu().numpy().tolist()
 
             results = support_collection.query(query_embeddings = [np_embedding], n_results = k, include = ['metadatas'])
             retrieved_classes = [m['class'] for m in results['metadatas'][0]]

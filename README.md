@@ -102,7 +102,7 @@ few-shot-rare-disease-classification/
 │
 ├── requirements.txt            # python dependencies
 └── README.md                   # project documentation
-
+```
 (more elaborate documentation found in respective folders with seperate READMEs)
 
 ## Results

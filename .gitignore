@@ -4,3 +4,4 @@ data/isic/
 data/medmnist/
 chroma_store/
 __pycache__/
+notebooks/

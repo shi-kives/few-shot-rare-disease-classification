@@ -1,0 +1,155 @@
+.container {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.infoBox {
+  padding: 10px 14px;
+  background-color: var(--primary-light);
+  border-radius: var(--radius);
+  color: var(--primary);
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.questionLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.buttonRow {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.btnCorrect {
+  background-color: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+.btnCorrect:hover {
+  background-color: var(--success);
+  color: var(--surface);
+}
+
+.btnIncorrect {
+  background-color: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.btnIncorrect:hover {
+  background-color: var(--danger);
+  color: var(--surface);
+}
+
+.correctionSection {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.select {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 13.5px;
+  outline: none;
+}
+
+.select:focus {
+  border-color: var(--border-focus);
+}
+
+.textarea {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-size: 13.5px;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+}
+
+.textarea:focus {
+  border-color: var(--border-focus);
+}
+
+.btnSubmitCorrection {
+  align-self: flex-start;
+  background-color: var(--primary);
+  color: var(--surface);
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.btnSubmitCorrection:hover {
+  background-color: var(--primary-hover);
+}
+
+.btnSubmitCorrection:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmationCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  background-color: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}

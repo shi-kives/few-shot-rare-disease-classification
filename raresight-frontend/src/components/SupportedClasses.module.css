@@ -1,0 +1,58 @@
+.container {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.badgeList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: var(--radius-xl);
+  font-size: 12.5px;
+  font-weight: 500;
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.emptyNote {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 16px;
+}
+
+.diagnosticNotice {
+  padding: 10px 14px;
+  background-color: var(--primary-light);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  color: var(--primary);
+  line-height: 1.45;
+  border: 1px solid var(--border);
+}

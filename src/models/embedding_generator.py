@@ -3,10 +3,10 @@ import timm
 import torch.nn as nn
 
 class EmbeddingGenerator(nn.Module):
-    def __init__(self, backbone = 'resnet18', embed_dim = 128):
+    def __init__(self, backbone = 'resnet18', embed_dim = 128, pretrained = False):
         super().__init__()
 
-        self.backbone = timm.create_model(model_name=backbone, pretrained=True, num_classes=0)
+        self.backbone = timm.create_model(model_name=backbone, pretrained=pretrained, num_classes=0)
         backbone_dim = self.backbone.num_features
 
         self.projection = nn.Sequential(

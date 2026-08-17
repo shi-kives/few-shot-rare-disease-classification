@@ -1,0 +1,45 @@
+:root {
+  /* Medical Color Palette */
+  --bg: #F0F4F7;
+  --surface: #FFFFFF;
+  --surface-alt: #FAFBFC;
+  --primary: #0B6B72;
+  --primary-hover: #0A5E65;
+  --primary-light: #E0F3F4;
+  --border: #DDE3EC;
+  --border-focus: #0B6B72;
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --success: #15803D;
+  --success-bg: #F0FDF4;
+  --success-border: #BBF7D0;
+  --warning: #D97706;
+  --warning-bg: #FFFBEB;
+  --warning-border: #FDE68A;
+  --danger: #B91C1C;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+
+  /* Modality Badges */
+  --badge-derm-bg: #FBEAF0;
+  --badge-derm-text: #72243E;
+  --badge-retina-bg: #E1F5EE;
+  --badge-retina-text: #085041;
+  --badge-hist-bg: #EEEDFE;
+  --badge-hist-text: #3C3489;
+  --badge-xray-bg: #E6F1FB;
+  --badge-xray-text: #0C447C;
+
+  /* Layout & Depth */
+  --radius: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+
+  /* Typography & Utilities */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --navbar-height: 52px;
+}

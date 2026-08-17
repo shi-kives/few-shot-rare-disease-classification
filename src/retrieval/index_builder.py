@@ -68,7 +68,7 @@ def build_support_index(model, support_root, class_names, modality, chroma_path,
             proto_col.add(
                 embeddings = [prototype.tolist()],
                 documents = [class_name],
-                id = [prototype_id],
+                ids = [prototype_id],
                 metadatas = [{
                     'class': class_name,
                     'dataset': dataset_tag,

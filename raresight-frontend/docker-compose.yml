@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  api:
+    build: ./api
+    # NO ports: mapping — FastAPI is not reachable from outside Docker
+    networks:
+      - raresight_net
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  ui:
+    build: .
+    ports:
+      - "80:80"        # Only Nginx is exposed
+    networks:
+      - raresight_net
+    depends_on:
+      - api
+
+networks:
+  raresight_net:
+    driver: bridge

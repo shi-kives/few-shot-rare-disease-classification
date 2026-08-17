@@ -152,6 +152,7 @@ few-shot-rare-disease-classification/
 Episode:
 -> Support set: N × K images
 -> Query set:   N × Q images
+```
 - Prototypes are computed for each class by sampling episodes, unfreezing the backbone, computing loss over 30 epochs, and computing accuracy. Each class has one associated prototype, which is the mean of its support embeddings.
 - Trains the embedding space using negative log-likelihood loss, encouraging queries to move closer to their correct class prototype and farther from competing classes.
 

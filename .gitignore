@@ -2,4 +2,7 @@
 .env
 data/isic/
 data/medmnist/
-data/processed/support images
+chroma_store/
+__pycache__/
+notebooks/
+data/chroma_db/

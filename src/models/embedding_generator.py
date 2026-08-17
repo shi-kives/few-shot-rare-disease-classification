@@ -1,12 +1,14 @@
 import timm # PyTorch Image Models library. Provides ResNet, EfficientNet, ViT
 import torch.nn as nn # PyTorch's neural network module. 
 
-class EmbeddingGenerator(nn.Module):
-    def __init__(self, backbone = 'resnet18', embed_dim = 128):
-        super().__init__()
+class EmbeddingGenerator(nn.Module): # inherits from nn.Module so funtions like parameters(), train(), and eval() can be directly applied onto EmbeddingGenerator object 'model'.
 
-        self.backbone = timm.create_model(model_name=backbone, pretrained=True, num_classes=0)
-        backbone_dim = self.backbone.num_features
+    def __init__(self, backbone = 'resnet18', embed_dim = 128): # default backbone = resnet18. all backbone outputs always have a final embedding size of 128. 
+        super().__init__() # for self.backbone & self.projection
+
+        self.backbone = timm.create_model(model_name=backbone, pretrained=True, num_classes=0) # hold pretrained weights instead of random, removes classification head.
+
+        backbone_dim = self.backbone.num_features # different for resnet18 and efficientnet-b3. 
 
         self.projection = nn.Sequential( # create projection head to convert backbone features -> 128 dim embedding
             nn.Linear(backbone_dim, 256),

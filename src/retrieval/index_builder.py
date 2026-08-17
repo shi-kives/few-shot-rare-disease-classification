@@ -73,8 +73,10 @@ def build_support_index(model, support_root, class_names, modality, chroma_path,
                 id = [prototype_id],
                 metadatas = [{
                     'class': class_name,
+                    'image_path': os.path.abspath(path),
                     'dataset': dataset_tag,
-                    'n_support': len(class_embeddings)
+                    'index': i,
+                    'filename': fname
                 }]
             )
 

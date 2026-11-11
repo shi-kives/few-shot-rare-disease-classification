@@ -6,12 +6,18 @@ import pandas as pd
 import os
 from medmnist import PathMNIST
 
-DATA_ROOT = '/content/drive/MyDrive/medmnist_data' if os.path.exists('/content/drive/MyDrive/medmnist_data') else './data/raw'
-os.makedirs(DATA_ROOT, exist_ok=True)
+def get_data_root():
+    if os.path.exists('/content/local_data/pathmnist_224.npz'):
+        return '/content/local_data'
+    if os.path.exists('/content/drive/MyDrive/medmnist_data'):
+        return '/content/drive/MyDrive/medmnist_data'
+    return './data/raw'
 
 class PathMNISTDataset(Dataset): # custom PathMNIST dataset wrapper
 
     def __init__(self, split, transform = None):
+        DATA_ROOT = get_data_root()
+        os.makedirs(DATA_ROOT, exist_ok=True)
         self.base = PathMNIST(split = split, download = True, size = 224, root = DATA_ROOT, mmap_mode='r') # split can be = ['train', 'val', 'test']. size is 224 x 224 for EfficientNet-B3
 
         self.transform = transform # image preprocessing function. defined in augmentations.py
@@ -75,12 +81,24 @@ class ISICDataset(Dataset): # custom ISIC dataset wrapper
         return np_image, label
 
 def build_class_index(dataset): # creates a mapping of class -> sample indices for episodic training
+    class_index = defaultdict(list)
 
-    class_index = defaultdict(list) 
+    if hasattr(dataset, 'base') and hasattr(dataset.base, 'labels'):
+        labels = dataset.base.labels.flatten()
+        for idx, label in enumerate(labels):
+            class_index[int(label)].append(idx)
+        return dict(class_index)
 
-    for idx in range(len(dataset)): # iterate over all samples
-        _, label = dataset[idx][0], dataset[idx][1] # retrieve image + label
-        class_index[int(label)].append(idx) # for class 'label', append 'idx' to the list. ex: {1: [0], 2: [4, 5]}
+    # Fast path for ISICDataset: read pre-parsed (image_path, label) tuples
+    if hasattr(dataset, 'samples'):
+        for idx, (_, label) in enumerate(dataset.samples):
+            class_index[int(label)].append(idx)
+        return dict(class_index)
+
+    # Fallback for any other dataset wrapper
+    for idx in range(len(dataset)):
+        _, label = dataset[idx]
+        class_index[int(label)].append(idx)
 
     return dict(class_index)
 

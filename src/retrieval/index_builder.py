@@ -66,17 +66,19 @@ def build_support_index(model, support_root, class_names, modality, chroma_path,
 
         prototype = np.mean(np.stack(class_embeddings), axis=0).astype(np.float32)
         prototype_id = f"proto_{dataset_tag}_{class_name}"
-
-        proto_col.upsert(
-            embeddings=[prototype.tolist()],
-            documents=[class_name],
-            ids=[prototype_id],
-            metadatas=[{
-                'class': class_name,
-                'dataset': dataset_tag,
-                'n_support': len(class_embeddings)
-            }]
-        )
+        try:
+            proto_col.add(
+                embeddings = [prototype.tolist()],
+                documents = [class_name],
+                id = [prototype_id],
+                metadatas = [{
+                    'class': class_name,
+                    'image_path': os.path.abspath(path),
+                    'dataset': dataset_tag,
+                    'index': i,
+                    'filename': fname
+                }]
+            )
 
     print("-- index built --")
     print("prototypes:", proto_col.count())

@@ -1,0 +1,194 @@
+.galleryContainer {
+  margin-top: 24px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.countBadge {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.cardMatch {
+  border-color: var(--success);
+}
+
+.cardDifferent {
+  border-color: var(--warning-border);
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: var(--surface-alt);
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-alt);
+  color: var(--text-muted);
+  font-size: 11px;
+  padding: 8px;
+  text-align: center;
+  gap: 4px;
+}
+
+.cardBody {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scoreLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.similarityScore {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.className {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 4px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+}
+
+.classNameMatch {
+  border-color: var(--success-border);
+  background-color: var(--success-bg);
+  color: var(--success);
+}
+
+.classNameDifferent {
+  border-color: var(--warning-border);
+  background-color: var(--warning-bg);
+  color: var(--warning);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.modalityBadge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: var(--radius-xl);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.badgeDerm {
+  background-color: var(--badge-derm-bg);
+  color: var(--badge-derm-text);
+}
+
+.badgeRetina {
+  background-color: var(--badge-retina-bg);
+  color: var(--badge-retina-text);
+}
+
+.badgeHist {
+  background-color: var(--badge-hist-bg);
+  color: var(--badge-hist-text);
+}
+
+.badgeXray {
+  background-color: var(--badge-xray-bg);
+  color: var(--badge-xray-text);
+}
+
+.badgeDefault {
+  background-color: var(--surface-alt);
+  color: var(--text-secondary);
+}
+
+.statusText {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

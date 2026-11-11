@@ -5,3 +5,4 @@ data/medmnist/
 chroma_store/
 __pycache__/
 notebooks/
+data/chroma_db/

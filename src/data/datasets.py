@@ -6,10 +6,13 @@ import pandas as pd
 import os
 from medmnist import PathMNIST
 
+DATA_ROOT = '/content/drive/MyDrive/medmnist_data' if os.path.exists('/content/drive/MyDrive/medmnist_data') else './data/raw'
+os.makedirs(DATA_ROOT, exist_ok=True)
+
 class PathMNISTDataset(Dataset): # custom PathMNIST dataset wrapper
 
     def __init__(self, split, transform = None):
-        self.base = PathMNIST(split = split, download = True, size = 224) # split can be = ['train', 'val', 'test']. size is 224 x 224 for EfficientNet-B3
+        self.base = PathMNIST(split = split, download = True, size = 224, root = DATA_ROOT, mmap_mode='r') # split can be = ['train', 'val', 'test']. size is 224 x 224 for EfficientNet-B3
 
         self.transform = transform # image preprocessing function. defined in augmentations.py
 

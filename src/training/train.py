@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import mlflow
 from tqdm import tqdm
+import os
 
 from src.data.datasets import PathMNISTDataset, build_class_index
 from src.data.augmentations import get_transform
@@ -95,9 +96,10 @@ def train():
             mlflow.log_metric('val_accuracy', val_accuracy, step = epoch)
             mlflow.log_metric('val_confidence_interval', val_conf_int, step = epoch)
 
-            model_path = f"models/best_model_{CONFIG['backbone']}.pth"
+            model_path = f"models/best_model_TEST_{CONFIG['backbone']}.pth"
             if val_accuracy > best_val_accuracy:
                 best_val_accuracy = val_accuracy
+                os.makedirs("models", exist_ok=True)
                 torch.save(model.state_dict(), model_path)
                 print(f"saved best model with val accuracy: {val_accuracy:.4f}")
 

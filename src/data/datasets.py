@@ -18,7 +18,9 @@ class PathMNISTDataset(Dataset): # custom PathMNIST dataset wrapper
     def __init__(self, split, transform = None):
         DATA_ROOT = get_data_root()
         os.makedirs(DATA_ROOT, exist_ok=True)
-        self.base = PathMNIST(split = split, download = True, size = 224, root = DATA_ROOT, mmap_mode='r') # split can be = ['train', 'val', 'test']. size is 224 x 224 for EfficientNet-B3
+        file_exists = os.path.exists(os.path.join(DATA_ROOT, 'pathmnist_224.npz'))
+
+        self.base = PathMNIST(split = split, download = not file_exists, size = 224, root = DATA_ROOT, mmap_mode='r') # split can be = ['train', 'val', 'test']. size is 224 x 224 for EfficientNet-B3
 
         self.transform = transform # image preprocessing function. defined in augmentations.py
 

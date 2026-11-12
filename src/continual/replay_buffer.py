@@ -1,8 +1,5 @@
 import os
-import numpy as np
 import torch
-from PIL import Image
-from collections import defaultdict
 
 class ReplayBuffer:
     def __init__(self, k_per_class = 5):
@@ -12,7 +9,11 @@ class ReplayBuffer:
 
     def add_class(self, class_name, images_tensor, model, device, label):
         if label is None:
-            label = len(self.buffer)
+            if class_name in self.class_to_label:
+                label = self.class_to_label[class_name]
+            else:
+                label = max(self.class_to_label.values(), default = -1) + 1
+
         self.class_to_label[class_name] = label
 
         model.eval()

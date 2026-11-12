@@ -93,7 +93,7 @@ def incremental_finetune(model, new_class_images, class_name, anchor_weights, fi
             'total': total_loss.item(),
             'task': task_loss.item(),
             'ewc': penalty.item(),
-            'replay': replay_loss.item() if isinstance(replay_loss. torch.Tensor) else replay_loss
+            'replay': replay_loss.item() if isinstance(replay_loss, torch.Tensor) else replay_loss
         })
 
         if (epoch + 1) % 10 == 0:
@@ -137,7 +137,7 @@ def run_incremental_addition(class_name, image_paths, modality, dataset_tag, mod
     from src.retrieval.index_refresher import refresh_all
 
     transform = get_transform(modality, 'test')
-    class_save_dir = os.path.join(f'data/processed/support_images/{dataset_tag}')
+    class_save_dir = os.path.join(save_dir, class_name)
     os.makedirs(class_save_dir, exist_ok = True)
 
     saved_paths = []
@@ -172,7 +172,7 @@ def run_incremental_addition(class_name, image_paths, modality, dataset_tag, mod
     }
 
     if all_proto_data['embeddings']:
-        existing_protos = torch.tensor(np.array(all_proto_data['emneddings']), dtype = torch.float32)
+        existing_protos = torch.tensor(np.array(all_proto_data['embeddings']), dtype = torch.float32, device = device)
         existing_names = all_proto_data['documents']
 
         needs_ft, similar_class = needs_finetuning(new_prototype, existing_protos, existing_names)
@@ -193,7 +193,7 @@ def run_incremental_addition(class_name, image_paths, modality, dataset_tag, mod
                 'modality': modality
             }
         }
-        refresh_all(model, proto_collection, support_collection, device)
+        refresh_all(model, support_root_map, proto_collection, support_collection, device)
 
         bt_after = evaluate_backward_transfer(model, dataset, class_index, base_classes, n_way = min(3, len(base_classes)), k_shot = 5, q_query = 15, n_episodes = 100, device = device, label = 'after')
 
@@ -218,7 +218,7 @@ def run_incremental_addition(class_name, image_paths, modality, dataset_tag, mod
 
     proto_id = f"proto_{dataset_tag}_{class_name}"
     try:
-        proto_collection.add(embeddings = [new_prototype_np.tolist()], documents = [class_name], ids = [proto_id], metadatas = [{
+        proto_collection.upsert(embeddings = [new_prototype_np.tolist()], documents = [class_name], ids = [proto_id], metadatas = [{
             'class': class_name,
             'dataset': dataset_tag,
             'n_support': len(new_embeddings_np),
@@ -230,7 +230,7 @@ def run_incremental_addition(class_name, image_paths, modality, dataset_tag, mod
     for i, (emb, path) in enumerate(zip(new_embeddings_np, saved_paths)):
         entry_id = f"support_{dataset_tag}_{class_name}_{i}"
         try:
-            support_collection.add(embeddings = [emb.tolist()], documents = [class_name], ids = [entry_id], metadatas = [{
+            support_collection.upsert(embeddings = [emb.tolist()], documents = [class_name], ids = [entry_id], metadatas = [{
                 'class': class_name,
                 'image_path': path,
                 'dataset': dataset_tag,
@@ -240,7 +240,8 @@ def run_incremental_addition(class_name, image_paths, modality, dataset_tag, mod
         except Exception:
             support_collection.update(ids = [entry_id], embeddings = [emb.tolist()])
 
-        replay_buffer.add_class(class_name, images_tensor, model, device)
+    if replay_buffer is not None:    
+        replay_buffer.add_class(class_name, images_tensor, model, device, label = None)
 
     if log_to_mlflow:
         try:

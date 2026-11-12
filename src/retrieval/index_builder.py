@@ -70,7 +70,7 @@ def build_support_index(model, support_root, class_names, modality, chroma_path,
             proto_col.add(
                 embeddings = [prototype.tolist()],
                 documents = [class_name],
-                id = [prototype_id],
+                ids = [prototype_id],
                 metadatas = [{
                     'class': class_name,
                     'image_path': os.path.abspath(path),
@@ -79,6 +79,8 @@ def build_support_index(model, support_root, class_names, modality, chroma_path,
                     'filename': fname
                 }]
             )
+        except Exception as e:
+            print("Error in adding prototype!: ", e)
 
     print("-- index built --")
     print("prototypes:", proto_col.count())
@@ -91,17 +93,12 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     pathmnist_split_path = os.path.join(project_root, 'data', 'processed', 'splits', 'medmnist_split.json')
-    isic_split_path = os.path.join(project_root, 'data', 'processed', 'splits', 'isic_split.json')
 
     with open(pathmnist_split_path, 'r', encoding='utf-8') as file:
         data_pathmnist = json.load(file)
         print("data loaded:", data_pathmnist)
 
-    with open(isic_split_path, 'r', encoding='utf-8') as file:
-        data_isic = json.load(file)
-        print("data loaded:", data_isic)
-
-    model = EmbeddingGenerator('efficientnet_b3', embed_dim=128)
+    model = EmbeddingGenerator('resnet18', embed_dim=128)
 
     checkpoint_path = os.path.join(project_root, 'models', 'best_model_efficientnet_b3.pth')
     model.load_state_dict(torch.load(checkpoint_path, map_location=device))
@@ -111,7 +108,6 @@ if __name__ == '__main__':
     chroma_path = os.path.join(project_root, 'chroma_store')
 
     pathmnist_support_root = os.path.join(project_root, 'data', 'processed', 'support_images', 'pathmnist')
-    isic_support_root = os.path.join(project_root, 'data', 'processed', 'support_images', 'isic')
 
     build_support_index(
         model=model,
@@ -122,13 +118,3 @@ if __name__ == '__main__':
         dataset_tag='PathMNIST',
         device=device
     )
-
-    '''build_support_index(
-        model=model,
-        support_root=isic_support_root,
-        class_names=data_isic['novel_classes'],
-        modality='derm',
-        chroma_path=chroma_path,
-        dataset_tag='ISIC',
-        device=device
-    )'''

@@ -116,7 +116,7 @@ def evaluate_test():
         test_dataset = PathMNISTDataset(split = 'test', transform = get_transform('path', 'test'))
         test_class_idx = build_class_index(dataset = test_dataset)
 
-        model_path = f"models/best_model_{CONFIG['backbone']}.pth"
+        model_path = f"models/best_model_TEST_{CONFIG['backbone']}.pth"
         model.load_state_dict(torch.load(model_path, map_location=device))
 
         test_acc_5shot, test_ci_5shot = evaluate(model = model, dataset = test_dataset, class_index = test_class_idx, available_classes = CONFIG['novel_classes'], n_way = 3, k_shot = 5, q_query = 15, n_episodes = 600, device = device)

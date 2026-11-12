@@ -30,7 +30,6 @@ def evaluate(model, dataset, class_index, available_classes, n_way, k_shot, q_qu
 
 
 def k_retrieval_precision(model, test_images, test_labels, support_collection, k, device):
-    device = torch.device('cpu')
 
     model.eval()
     precisions = []

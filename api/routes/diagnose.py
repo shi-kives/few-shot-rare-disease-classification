@@ -1,6 +1,5 @@
 import logging
 from typing import Optional
-import numpy as np
 import torch
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 
@@ -55,12 +54,9 @@ async def diagnose(
             tensor = preprocess_image(image_bytes)
             emb_np = embed_image(tensor, model, device)
         else:
-            # Fallback embedding if weights not yet loaded
-            logger.warning("Embedding model not loaded. Using fallback normalized embedding.")
-            seed = sum(image_bytes[:100]) % (2**32)
-            rng = np.random.default_rng(seed)
-            emb_np = rng.standard_normal(128).astype(np.float32)
-            emb_np = emb_np / (np.linalg.norm(emb_np) + 1e-8)
+            logger.warning("Embedding model not loaded.")
+            raise HTTPException(status_code = 503, detail="Model unavailable.")
+            
 
         effective_modality = (
             "Histopathology" if (not modality or modality == "Auto-detect") else modality
@@ -78,9 +74,9 @@ async def diagnose(
             prediction = inf["prediction"]
             confidence = float(inf["confidence"])
             all_scores = {k: float(v) for k, v in inf["all_class_scores"].items()}
-            agrees = bool(inf.get("agrees", True))
-            margin = float(inf.get("margin", 0.1))
-            min_dist = float(inf.get("min_distance", 0.5))
+            agrees = bool(inf.get("agrees"))
+            margin = float(inf.get("margin"))
+            min_dist = float(inf.get("min_distance"))
 
             similar_cases = []
             for item in inf.get("similar_cases", []):
@@ -91,7 +87,7 @@ async def diagnose(
                     SimilarCase(
                         id=item.get("filename", item.get("class")),
                         image_path=url_path,
-                        similarity_score=float(item.get("similarity", 0.85)),
+                        similarity_score=float(item.get("similarity")),
                         class_name=item.get("class", prediction),
                         dataset=item.get("dataset", "PathMNIST (Histopathology)"),
                         modality=effective_modality,
@@ -120,46 +116,8 @@ async def diagnose(
             )
 
         # 3. Default fallback if ChromaDB is not yet populated
-        logger.info("ChromaDB index is currently empty. Returning initial baseline diagnosis.")
-        default_pred = "Colorectal Adenocarcinoma Epithelium"
-        return DiagnoseResponse(
-            prediction=default_pred,
-            confidence_level="HIGH",
-            confidence=0.88,
-            agrees=True,
-            modality=effective_modality,
-            embedding=emb_np.tolist(),
-            gates=GatesStatus(
-                similarity_threshold_passed=True,
-                prototype_dispersion_passed=True,
-                ood_status_passed=True,
-            ),
-            similar_cases=[
-                SimilarCase(
-                    id="path_case_01",
-                    image_path="/static/pathmnist/colorectal_adenocarcinoma_epithelium/sample_0000.png",
-                    similarity_score=0.942,
-                    class_name=default_pred,
-                    dataset="PathMNIST (Histopathology)",
-                    modality=effective_modality,
-                    confirmed=True,
-                ),
-                SimilarCase(
-                    id="path_case_02",
-                    image_path="/static/pathmnist/colorectal_adenocarcinoma_epithelium/sample_0001.png",
-                    similarity_score=0.918,
-                    class_name=default_pred,
-                    dataset="PathMNIST (Histopathology)",
-                    modality=effective_modality,
-                    confirmed=True,
-                ),
-            ],
-            all_class_scores={
-                default_pred: 0.88,
-                "Cancer-Associated Stroma": 0.65,
-                "Normal Colon Mucosa": 0.42,
-            },
-        )
+        logger.info("ChromaDB index is currently empty.")
+        raise HTTPException(status_code=503, detail="ChromaDB index is unavailable.")
 
     except HTTPException:
         raise

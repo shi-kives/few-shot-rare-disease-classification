@@ -65,7 +65,7 @@ def add_class_pure(class_name, image_paths, dataset_tag, modality, model, proto_
     images_tensor = torch.stack([
         get_transform(modality, 'test')(image=np.array(Image.open(p).convert('RGB')))['image'] for p in saved_paths
     ])
-    replay_buffer.add_class(class_name, images_tensor, model, device)
+    replay_buffer.add_class(class_name, images_tensor, model, device, label = None)
     
     print(f"added {class_name} ({len(embeddings)} images) - pure prototype addition")
     return {

@@ -1,5 +1,4 @@
 import logging
-import pickle
 from pathlib import Path
 from contextlib import asynccontextmanager
  
@@ -10,14 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
  
 from api.utils import load_model
 from api.routes import diagnose, feedback, add_class
- 
+
+from src.continual.replay_buffer import ReplayBuffer
+
 logger = logging.getLogger("uvicorn")
  
 # ---------------------------------------------------------------------
 # Configuration — adjust these to match your actual project layout
 # ---------------------------------------------------------------------
 MODEL_PATH = "models/best_model_resnet18.pth" if Path("models/best_model_resnet18.pth").exists() else "models/best_model.pth"
-FISHER_PATH = "models/fisher_diagonal.pth"
+FISHER_PATH = "models/fisher_diagonal.pt"
 ANCHOR_PATH = "models/anchor_weights.pth"
 REPLAY_BUFFER_PATH = "data/replay_buffer.pkl"
 CHROMA_PERSIST_DIR = "data/chroma_db"
@@ -70,17 +71,17 @@ async def lifespan(app: FastAPI):
         logger.error(f"Failed to connect to ChromaDB: {e}")
  
     # 4. Load the replay buffer (used for EWC rehearsal during fine-tuning)
-    replay_buffer = []
+    replay_buffer = ReplayBuffer()
     try:
         buffer_path = Path(REPLAY_BUFFER_PATH)
         if buffer_path.exists():
-            with open(buffer_path, "rb") as f:
-                replay_buffer = pickle.load(f)
-            logger.info(f"Replay buffer loaded ({len(replay_buffer)} samples)")
+            replay_buffer = ReplayBuffer.load(str(buffer_path))
+            logger.info(f"Replay buffer loaded: {len(replay_buffer)} classes")
         else:
-            logger.warning(f"No replay buffer found at {REPLAY_BUFFER_PATH} — starting empty")
+            logger.warning("No replay buffer found; starting empty")
     except Exception as e:
         logger.warning(f"Could not load replay buffer, starting empty: {e}")
+        replay_buffer = ReplayBuffer()
  
     # Store everything on app.state so route handlers can access it
     app.state.device = device

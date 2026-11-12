@@ -7,7 +7,7 @@ from src.data.augmentations import get_transform
 
 def refresh_class(class_name, dataset_tag, image_dir, modality, model, proto_collection, support_collection, device):
     transform = get_transform(modality, 'test')
-    image_files = sorted([f for f in os.listdir(image_dir) if f.lower().endswith('.jpg', '.jpeg', '.png')])
+    image_files = sorted([f for f in os.listdir(image_dir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
 
     model.eval()
     new_embeddings = []
@@ -42,5 +42,3 @@ def refresh_all(model, support_root_map, proto_collection, support_collection, d
     print("refresh complete.")
     print(f"prototypes: {proto_collection.count()}")
     print(f"support images: {support_collection.count()}")
-
-

@@ -11,8 +11,8 @@ def create_datasets():
     test_dataset = PathMNIST(split='test', download=True, size=224)
     print("test dataset loaded")
 
-    novel_classes = [0, 4, 6]
-    base_classes  = [1, 2, 3, 5, 7, 8]
+    novel_classes = [6, 7, 8]
+    base_classes  = [0, 1, 2, 3, 4, 5]
 
     base_output_dir = os.path.join("data", "processed", "support_images", "PathMNIST")
 

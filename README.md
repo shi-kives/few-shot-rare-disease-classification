@@ -1,4 +1,7 @@
-﻿# Few-Shot Rare Disease Classification
+# NOTE:
+Find the updated & cleaned version of this repository [here](https://github.com/shi-kives/rare-sight). This repository has been archived for reference purposes.
+
+# Few-Shot Rare Disease Classification
 
 ## Brief Description
 The Few-Shot Rare Disease Classification is a metric-learning system that learns a 128-Dimension medical-image embedding space using EfficientNet-B3 and episodic Prototypical Network training. It enables classification of novel/unseen disease classes from minimal labeled support examples. The system combines prototype-based classification with ChromaDB similarity retrieval, hybrid decision-making, uncertainty estimation, and continual learning using Fisher-based Elastic Weight Consolidation.
